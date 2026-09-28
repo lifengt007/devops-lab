@@ -1,0 +1,95 @@
+name: DevOps CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Terraform format
+        run: terraform fmt -check -recursive terraform/
+
+      - name: AWS Terraform init
+        working-directory: terraform/aws
+        run: terraform init -backend=false
+
+      - name: AWS Terraform validate
+        working-directory: terraform/aws
+        run: terraform validate
+
+      - name: GCP Terraform init
+        working-directory: terraform/gcp
+        run: terraform init -backend=false
+
+      - name: GCP Terraform validate
+        working-directory: terraform/gcp
+        run: terraform validate
+
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t devops-web:${{ github.sha }} \
+            ./app
+
+
+  kubernetes:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Validate manifests
+        run: |
+          kubectl apply \
+            --dry-run=client \
+            -f kubernetes/
+
+
+  helm:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Helm lint
+        run: helm lint ./helm/devops-web
+
+      - name: Render Helm templates
+        run: |
+          helm template devops-web \
+            ./helm/devops-web

@@ -1,0 +1,12 @@
+# DevOps Lab
+
+Hands-on DevOps lab covering:
+
+- Kubernetes
+- Terraform
+- GitHub Actions
+- Helm
+- Argo CD
+- Istio / Envoy
+- Canary deployments
+- Telemetry and observability
