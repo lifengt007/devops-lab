@@ -44,3 +44,18 @@ jobs:
       - name: Validate GCP Terraform
         working-directory: terraform/gcp
         run: terraform validate
+
+    docker:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Download repository
+        uses: actions/checkout@v6
+
+      - name: Build application image
+        run: docker build -t devops-web:${{ github.sha }} ./app
+
+      - name: Show built image
+        run: docker images
