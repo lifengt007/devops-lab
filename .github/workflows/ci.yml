@@ -1,29 +1,46 @@
-name: Learn GitHub Actions
+name: DevOps CI
 
 on:
   push:
     branches:
       - main
 
+  pull_request:
+    branches:
+      - main
+
 jobs:
 
-  learn-runner:
+  terraform:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Download repository to runner
+      - name: Download repository
         uses: actions/checkout@v6
 
-      - name: Show where I am
-        run: pwd
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
 
-      - name: Show repository files
-        run: ls -la
+      - name: Show Terraform version
+        run: terraform version
 
-      - name: Show operating system
-        run: uname -a
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive terraform/
 
-      - name: Print message
-        run: echo "This command is running on a GitHub Actions runner"
+      - name: Initialize AWS Terraform
+        working-directory: terraform/aws
+        run: terraform init -backend=false
+
+      - name: Validate AWS Terraform
+        working-directory: terraform/aws
+        run: terraform validate
+
+      - name: Initialize GCP Terraform
+        working-directory: terraform/gcp
+        run: terraform init -backend=false
+
+      - name: Validate GCP Terraform
+        working-directory: terraform/gcp
+        run: terraform validate
