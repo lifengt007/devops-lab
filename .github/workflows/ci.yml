@@ -1,95 +1,29 @@
-name: DevOps CI
+name: Learn GitHub Actions
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
 jobs:
 
-  terraform:
+  learn-runner:
+
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout
+      - name: Download repository to runner
         uses: actions/checkout@v6
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v4
+      - name: Show where I am
+        run: pwd
 
-      - name: Terraform format
-        run: terraform fmt -check -recursive terraform/
+      - name: Show repository files
+        run: ls -la
 
-      - name: AWS Terraform init
-        working-directory: terraform/aws
-        run: terraform init -backend=false
+      - name: Show operating system
+        run: uname -a
 
-      - name: AWS Terraform validate
-        working-directory: terraform/aws
-        run: terraform validate
-
-      - name: GCP Terraform init
-        working-directory: terraform/gcp
-        run: terraform init -backend=false
-
-      - name: GCP Terraform validate
-        working-directory: terraform/gcp
-        run: terraform validate
-
-
-  docker:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Build Docker image
-        run: |
-          docker build \
-            -t devops-web:${{ github.sha }} \
-            ./app
-
-
-  kubernetes:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Validate manifests
-        run: |
-          kubectl apply \
-            --dry-run=client \
-            -f kubernetes/
-
-
-  helm:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Helm
-        uses: azure/setup-helm@v4
-
-      - name: Helm lint
-        run: helm lint ./helm/devops-web
-
-      - name: Render Helm templates
-        run: |
-          helm template devops-web \
-            ./helm/devops-web
+      - name: Print message
+        run: echo "This command is running on a GitHub Actions runner"
