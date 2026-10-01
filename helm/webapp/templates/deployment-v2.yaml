@@ -28,7 +28,9 @@ spec:
 
         - name: web
 
-          image: devops-web:v2
+          #Testing bad image issue
+          #image: devops-web:v2
+          image: devops-web:v999999
 
           imagePullPolicy: IfNotPresent
 
