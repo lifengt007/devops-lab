@@ -159,3 +159,11 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+#Adding v1 and v2 webapps percentage traffic for canary
+
+canary:
+
+  v1Weight: 90
+
+  v2Weight: 10

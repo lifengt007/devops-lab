@@ -1,0 +1,18 @@
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+
+metadata:
+  name: web-telemetry
+  namespace: gitops-lab
+
+spec:
+
+  accessLogging:
+
+    - providers:
+
+        - name: envoy
+  tracing:
+    - providers:
+        - name: jaeger
+      randomSamplingPercentage: 100
